@@ -117,6 +117,8 @@ jobs:
           name: Back-end test
           command: |
             cd backend
+            npm i 
+            npm audit --audit-level=critical
             npm run test
       - slack/notify:
           event: fail
