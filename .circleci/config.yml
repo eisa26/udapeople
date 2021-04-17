@@ -99,6 +99,7 @@ jobs:
           name: Font-end test
           command: |
             cd frontend
+            npm run install
             npm run test
       - slack/notify:
           event: fail
