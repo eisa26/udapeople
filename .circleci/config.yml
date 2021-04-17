@@ -99,7 +99,6 @@ jobs:
           name: Font-end test
           command: |
             cd frontend
-            npm install oauth-sign
             npm run test
       - slack/notify:
           event: fail
