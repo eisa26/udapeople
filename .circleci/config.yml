@@ -77,7 +77,6 @@ jobs:
           command: |
             cd backend
             npm i
-            npm audit --audit-level=critical
             npm run build
       - save_cache:
           paths: [backend/node_modules]
@@ -101,7 +100,6 @@ jobs:
           command: |
             cd frontend
             npm install oauth-sign
-            npm install jest
             npm run test
       - slack/notify:
           event: fail
