@@ -46,7 +46,6 @@ jobs:
           name: Back-end build
           command: |
             cd ~/project/backend
-            npm install -g npm@latest
             npm install
             npm audit fix --audit-level=critical --force
             npm run build
