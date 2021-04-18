@@ -92,14 +92,18 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      - checkout
+      - checkout 
       - run:
-          name: Font-end test
+          name: Install prerequsites
+          command: |
+            sudo apt -y install jq tar gzip git curl
+      - restore_cache:
+          key: v1-frontend-build
+      - run:
+          name: Run frontend tests
           command: |
             cd frontend
-            sudo npm install webpack-dev-server -g
-            npm install oauth-sign
-            sudo npm install
+            npm i
             npm run test
       - slack/notify:
           event: fail
