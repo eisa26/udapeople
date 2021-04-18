@@ -93,8 +93,6 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          #keys: ["frontend-build"]  # -<< pipeline.id >>"
       - run:
           name: Font-end test
           command: |
