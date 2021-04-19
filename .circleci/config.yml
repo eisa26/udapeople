@@ -257,11 +257,7 @@ jobs:
               --template-file .circleci/files/backend.yml \
               --tags project=backend-tag \
               --stack-name "Udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" 
-            URLS=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress"  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}"  --output text)  
-            echo "URLS=$URLS"
-            echo "${CIRCLE_WORKFLOW_ID}"
-            curl -H "Content-Type: text/plain" -H "token: cc7bd645-0132-43da-9fbe-5a2a080a16dc" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}  
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"   
       - run:
           name: Ensure front-end infrastructure exist
           command: |
