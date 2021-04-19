@@ -203,7 +203,7 @@ jobs:
    deploy-frontend: 
     docker:
        # Docker image here that supports AWS CLI
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
@@ -245,21 +245,23 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}       
    deploy-infrastructure: 
      docker:
-       - image: amazon/aws-cli
-     steps:
-      - checkout  
+      docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout #checkout code from git
+      - run: yum install -y tar #(install dependencies)
+      - run: yum install -y gzip #(install dependencies)
       - run:
-          command: |
-            yum -y install tar gzip
-      - run:
-          name: Ensure back-end infrastructure exists
+          name: Ensure back-end infrastructure exists #(deploying backend. get backend ip and save to memstash for frontend use)
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=udapeople-${CIRCLE_WORKFLOW_ID:0:7} \
-              --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --region us-west-2 \
-              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  
+              --tags project=backend-tag \
+              --stack-name "Udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" 
+            URLS=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress"  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}"  --output text)
+            echo "URLS=$URLS" 
+            curl -H "Content-Type: text/plain" -H "token: 1e1e96f7-a791-42b5-b240-bd5407aa9c51" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}  
       - run:
           name: Ensure front-end infrastructure exist
           command: |
