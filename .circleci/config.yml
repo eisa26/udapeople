@@ -159,6 +159,14 @@ jobs:
           command: |
             cat backend/.env
       - run:
+          name: Setup inventory file
+          command: |
+            cd .circleci/ansible
+            echo "[web]" >> inventory.txt
+            URLS=$(curl -H "token: 1e1e96f7-a791-42b5-b240-bd5407aa9c51" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
+            echo $URLS >> inventory.txt
+            cat inventory.txt
+      - run:
           name: Configure server
           command: |
             cd .circleci/ansible
