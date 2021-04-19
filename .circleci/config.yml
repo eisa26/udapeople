@@ -271,20 +271,11 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            aws ec2 describe-instances \
-            \
-             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --filters "Name=tag:project,Values=udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --output text >> .circleci/ansible/inventory.txt
-            curl -H "Content-Type: text/plain" -H "token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734" \
-              --request PUT \
-              --data `aws ec2 describe-instances \
-                --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                --filters "Name=tag:project,Values=udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
-                --output text` \
-              https://api.memstash.io/values/hosts-deployed-${CIRCLE_WORKFLOW_ID:0:7}
-              echo URL: https://api.memstash.io/values/hosts-deployed-${CIRCLE_WORKFLOW_ID:0:7}
-              echo Token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734
+             export backend_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=ebackend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text >> .circleci/ansible/inventory.txt)
+            cat ./.circleci/ansible/inventory.txt
       - run:
           name: Add .env vars to backend distro
           command: |
