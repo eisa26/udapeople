@@ -320,13 +320,21 @@ jobs:
           name: Run migrations
           no_output_timeout: 7m
           command: |
+            cd backend 
+            npm install
+            npm run build
             pwd
-            ls
-            #cd backend && npm run migrations | tee migrations-${CIRCLE_WORKFLOW_ID}.txt
-            cd backend
+            echo " THIS IS .env CONTENTS:"
             cat .env
-            npm run migrations | tee migrations-${CIRCLE_WORKFLOW_ID}.txt
-            cat migrations-${CIRCLE_WORKFLOW_ID}.txt
+            echo 'DUMP MIGRATIONS'
+            echo 'hello world!!' > migrations_dump.txt
+            npm run migrations >> migrations_dump.txt
+            echo "generated file!" 
+            pwd
+            ls -la
+            echo 'DISPLAY CONTENTS'
+            echo '*****************'
+            cat migrations_dump.txt
       - run:
           name: Send migration results to memstash
           command: |
