@@ -263,13 +263,15 @@ jobs:
       - run:
           name: Ensure front-end infrastructure exist
           command: |
-            aws cloudformation deploy \
-              --template-file .circleci/files/frontend.yml \
-              --tags project=udapeople-${CIRCLE_WORKFLOW_ID:0:7} \
-              --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}\
-              --region us-west-2 \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
-              #exit 0
+             aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              --tags project=backend-tag \
+              --stack-name "Udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" 
+            URLS=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress"  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}"  --output text)
+            echo "URLS=$URLS" 
+            curl -H "Content-Type: text/plain" -H "token: 1e1e96f7-a791-42b5-b240-bd5407aa9c51" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}
+
       - run:
           name: Add back-end ip to ansible inventory
           command: |
