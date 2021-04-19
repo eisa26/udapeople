@@ -308,50 +308,41 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
           
    run-migrations: 
-    docker:
+   docker:
+      # Docker image here that supports NodeJS
       - image: circleci/node:13.8.0
     steps:
+      # Checkout code from git
       - checkout
-      - attach_workspace:
-          at: ~/project
-      - restore_cache:
-          keys: [backend-build]
       - run:
           name: Run migrations
-          no_output_timeout: 7m
+          no_output_timeout: 10m
           command: |
-            cd backend 
+            cd backend
+            echo ENVIROMENT=$ENVIROMENT > ".env"
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ".env"
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> ".env"
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ".env"
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> ".env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
             npm install
-            npm run build
-            pwd
-            echo " THIS IS .env CONTENTS:"
-            cat .env
-            echo 'DUMP MIGRATIONS'
-            echo 'hello world!!' > migrations_dump.txt
-            npm run migrations >> migrations_dump.txt
-            echo "generated file!" 
-            pwd
-            ls -la
-            echo 'DISPLAY CONTENTS'
-            echo '*****************'
-            cat migrations_dump.txt
+            touch migrations_log.txt
+            npm run migrations >> migrations_log.txt
+            cat migrations_log.txt
       - run:
           name: Send migration results to memstash
           command: |
-            cd backend
-            if grep -q "success" migrations-${CIRCLE_WORKFLOW_ID}.txt
-            then
-              curl -H "Content-Type: text/plain" -H "token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734" \
-              --request PUT \
-              --data '1' \
-              https://api.memstash.io/values/migrations-${CIRCLE_WORKFLOW_ID:0:7}
-            else
-              curl -H "Content-Type: text/plain" -H "token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734" \
-              --request PUT \
-              --data '0' \
-              https://api.memstash.io/values/migrations-${CIRCLE_WORKFLOW_ID:0:7}
+            # Your code here
+            echo "CIRCLE_WORKFLOW_ID: ${CIRCLE_WORKFLOW_ID}"
+            if grep "has been executed successfully" backend/migrations_log.txt;
+            then curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}; \
             fi
-            echo Key: migrations-${CIRCLE_WORKFLOW_ID:0:7}  
+     # Here's where you will add some code to rollback on failure
+      - revert-migrations  
    scan-backend: 
     docker:
       - image: circleci/node:13.8.0
