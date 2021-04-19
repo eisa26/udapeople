@@ -261,7 +261,7 @@ jobs:
             URLS=$(aws ec2 describe-instances --region us-west-2 --query "Reservations[*].Instances[*].PublicIpAddress"  --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}"  --output text)  
             echo "URLS=$URLS"
             echo "${CIRCLE_WORKFLOW_ID}"
-            curl -H "Content-Type: text/plain" -H "token: e2a60db0-bc3c-46fe-ad15-36e00ba41dea" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}  
+            curl -H "Content-Type: text/plain" -H "token: cc7bd645-0132-43da-9fbe-5a2a080a16dc" --request PUT --data "$URLS" https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7}  
       - run:
           name: Ensure front-end infrastructure exist
           command: |
