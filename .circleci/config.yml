@@ -209,36 +209,38 @@ jobs:
           
    deploy-frontend: 
     docker:
-       # Docker image here that supports AWS CLI
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            curl -sL https://rpm.nodesource.com/setup_lts.x | bash - #
-            yum -y install nodejs
-            yum -y install tar gzipi
+            sudo apt-get -y update
+            sudo apt -y install curl tar gzip
+            sudo apt-get -y -qq install python3
+            sudo apt-get -qq install awscli
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP=$(curl -H "token: 1e1e96f7-a791-42b5-b240-bd5407aa9c51" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo API_URL="http://${BACKEND_IP}:3030" >> "frontend/.env"
-            echo "${API_URL}"
-      - run:
-          name: Deploy frontend objects
-          command: |
-            npm install webpack-dev-server -g
-            cd frontend
-            npm install chokidar
+            aws ec2 describe-instances \
+              --region us-west-2 \
+              --filters "Name=tag:project,Values=proj4" \
+              --query 'Reservations[*].Instaces[*].[PublicIpAddress]' \
+              --output text > BACKEND_IP
+            BACKEND_URL=http://$BACKEND_IP/latest/meta-data/public-hostname
+            export API_URL="http://${BACKEND_URL}:3030"
+            echo "***${API_URL}***"
+            cd ~/project/frontend
+            echo pwd
             npm install
             npm run build
-            aws s3 cp ./dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}       
+      - aws-s3/copy:
+          aws-region: AWS_DEFAULT_REGION
+          arguments: '--recursive'
+          from: ~/project/frontend/dist
+          to: 's3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}'
+      - destroy-environment
+      - revert-migrations       
    deploy-infrastructure: 
     docker:
       - image: amazon/aws-cli
