@@ -394,15 +394,15 @@ jobs:
           name: Backend smoke test.
           command: |
             cd ~/project/backend
-            export BACKENDIP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
-            export BACKENDDNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
+            touch .env
+            export BACKENDIP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text) >> .env
+            export BACKENDDNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text) >> .env
             echo "BACKENDIP: ${BACKENDIP}"
             echo "BACKENDNS: ${BACKENDDNS}"
             echo "BACKENDIP: ${API_URL}"
             
             pwd
             ls -la
-            cat ~/project/backend/.env
             echo "http://${BACKENDIP}:3030"
             curl "http://${BACKENDIP}:3030/api/status"
       - run:
