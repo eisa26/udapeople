@@ -216,8 +216,9 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update tar gzip ansible nodejs npm curl
-            pip install awscli
+            curl -sL https://rpm.nodesource.com/setup_lts.x | bash - #
+            yum -y install nodejs
+            yum -y install tar gzipi
       - run:
           name: Get backend url
           command: |
