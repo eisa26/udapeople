@@ -222,9 +222,9 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP=$(curl -H "token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734" \
-              --request GET https://api.memstash.io/values/hosts-deployed-${CIRCLE_WORKFLOW_ID:0:7})
-            export API_URL="http://${BACKEND_IP}:3000"
+            BACKEND_IP=$(curl -H "token: 1e1e96f7-a791-42b5-b240-bd5407aa9c51" --request GET https://api.memstash.io/values/url_${CIRCLE_WORKFLOW_ID:0:7})
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo API_URL="http://${BACKEND_IP}:3030" >> "frontend/.env"
             echo "${API_URL}"
       - run:
           name: Deploy frontend objects
@@ -242,7 +242,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - checkout 
+      - checkout #checkout code from git
       - run: yum install -y tar #(install dependencies)
       - run: yum install -y gzip #(install dependencies)
       - run:
