@@ -322,7 +322,7 @@ jobs:
           command: |
             pwd
             ls
-            cd backend && npm run migrations | tee migrations-${CIRCLE_WORKFLOW_ID}.txt
+            #cd backend && npm run migrations | tee migrations-${CIRCLE_WORKFLOW_ID}.txt
             cd backend
             cat .env
             npm run migrations | tee migrations-${CIRCLE_WORKFLOW_ID}.txt
