@@ -229,24 +229,11 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            # echo "${API_URL}"
+            npm install webpack-dev-server -g
             cd frontend
             npm install
-            npm install -g webpack webpack-cli
-            #npm install -D webpack-cli
-            #npm install dotenv-webpack
-            #npm audit fix
-            BACKEND_IP=$(curl -H "token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734" \
-                --request GET https://api.memstash.io/values/hosts-deployed-${CIRCLE_WORKFLOW_ID:0:7})
-            export API_URL="http://${BACKEND_IP}:3000"
-            echo "API_URL=${API_URL}"
-            echo API_URL=$API_URL > .env
-            echo ENVIRONMENT=development >> .env
-            # echo NODE_ENV=production >> .env
-            cat ".env"
             npm run build
-            cd dist
-            aws s3 sync . s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --delete
+            aws s3 cp ./dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment:
