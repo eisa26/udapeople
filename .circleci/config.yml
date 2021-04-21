@@ -90,13 +90,13 @@ jobs:
             echo Old Workflow Id:${OLD_WORKFLOW_ID}
             echo "New id:${CIRCLE_WORKFLOW_ID:0:7}"
             echo ${STACKS}
-            # if [[ ! "${STACKS[@]}" =~ "${OLD_WORKFLOW_ID}" ]]
-            # then
+            if [[ ! "${STACKS[@]}" =~ "${OLD_WORKFLOW_ID}" ]]
+            then
             echo "Deleting stacks with Old Worflow ID: ${OLD_WORKFLOW_ID}"
             aws s3 rm s3://udapeople-${OLD_WORKFLOW_ID} --recursive
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW_ID} --region us-west-2
             aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW_ID} --region us-west-2
-            # fi
+            fi
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment:
