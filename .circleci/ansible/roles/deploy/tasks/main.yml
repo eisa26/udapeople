@@ -1,42 +1,37 @@
----
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"
+
 - name: "install dependencies."
   become: true
   apt:
-    name: "tar"
-    state: latest
+    name: ["nodejs", "npm"]
     update_cache: yes
 
-- name: Copy backend dist files to remote server
-  copy:
-    src: /root/project/backend
-    dest: /home/ubuntu
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
 
-- name: Install Node modules
-  shell: |
-    cd /home/ubuntu/backend
-    npm install
-    npm install --only=dev
+- name: "deploy backend app to new location"
+  become: true
+  copy:
+    src: app.tar.gz
+    dest: /home/ubuntu/
     
-- name: Building backend service
-  shell: |
-    cd /home/ubuntu/backend
-    npm run build
-    npm run prestart:prod
-        
-- name: Executing node
+- name: "Unpack app.tar.gz files"
   become: true
   shell: |
-    cd /home/ubuntu/backend
-    pm2 start npm --name backend -- start
-    pm2 ls
-- name: Building node service
+    cd /home/ubuntu/
+    tar xzvf app.tar.gz
+    rm app.tar.gz
+    ls
+- name: "running backend app"
+  become: true
   shell: |
-    cd /home/ubuntu/backend
-    npm run build
-    npm run prestart:prod
-    
-- name: start pm2 for dist/main.js
-  become: no
-  shell: pm2 start main.js
-  args:
-    chdir: /home/ubuntu/backend/dist
+    cd /home/ubuntu/dist
+    pm2 start main.js

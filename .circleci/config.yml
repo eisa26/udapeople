@@ -400,11 +400,8 @@ jobs:
             echo "BACKENDIP: ${BACKENDIP}"
             echo "BACKENDNS: ${BACKENDDNS}"
             echo "BACKENDIP: ${API_URL}"
-            
-            pwd
-            ls -la
-            echo "http://${BACKENDIP}:3030"
-            curl "http://${BACKENDIP}:3030/api/status"
+          
+          
       - run:
           name: Frontend smoke test.
           command: |
