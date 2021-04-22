@@ -81,22 +81,17 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            # Get old workflow id
-            export OLD_WORKFLOW_ID=$(curl -H "token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734" --request GET \
-              https://api.memstash.io/values/workflow_id)
-            # Get stack list
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-            echo Old Workflow Id:${OLD_WORKFLOW_ID}
-            echo "New id:${CIRCLE_WORKFLOW_ID:0:7}"
-            echo ${STACKS}
-            if [[ ! "${STACKS[@]}" =~ "${OLD_WORKFLOW_ID}" ]]
-            then
-              aws s3 rb s3://udapeople-${OldWorkflowID} --force
+            export OldWorkflowID=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+            echo "${OldWorkflowID}"
+            export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            echo "${STACKS}"            
+            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]; then
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-            else
-              echo "no destroy"
             fi
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
