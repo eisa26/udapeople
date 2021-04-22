@@ -95,7 +95,6 @@ jobs:
             echo "Deleting stacks with Old Worflow ID: ${OLD_WORKFLOW_ID}"
             aws s3 rm s3://udapeople-${OLD_WORKFLOW_ID} --recursive
             aws cloudformation delete-stack --stack-name backend-${OLD_WORKFLOW_ID} --region us-west-2
-            aws cloudformation delete-stack --stack-name frontend-${OLD_WORKFLOW_ID} --region us-west-2
             fi
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
