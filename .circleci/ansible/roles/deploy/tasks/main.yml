@@ -2,13 +2,11 @@
   become: true
   apt:
     upgrade: "yes"
-
 - name: "install dependencies."
   become: true
   apt:
     name: ["nodejs", "npm"]
     update_cache: yes
-
 - name: "install pm2"
   become: true
   npm:
@@ -16,22 +14,61 @@
     global: yes
     production: yes
     state: present
-
-- name: "deploy backend app to new location"
+- name: "copy backend file"
   become: true
   copy:
-    src: app.tar.gz
-    dest: /home/ubuntu/
-    
-- name: "Unpack app.tar.gz files"
+    src: /root/project/backend
+    dest: /root
+    force: no
+- name: "install npm packages"
   become: true
-  shell: |
-    cd /home/ubuntu/
-    tar xzvf app.tar.gz
-    rm app.tar.gz
-    ls
-- name: "running backend app"
+  command: npm install
+  args:
+    chdir: /root/backend
+- name: "compile npm packages"
   become: true
-  shell: |
-    cd /home/ubuntu/dist
-    pm2 start main.js
+  command: npm run build
+  args:
+    chdir: /root/backend
+- name: "start server"
+  become: true
+  command: pm2 start npm -- run start
+  args:
+    chdir: /root/backend
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+    update_cache: yes
+- name: "install pm2"
+  become: true
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
+- name: "copy backend file"
+  become: true
+  copy:
+    src: /root/project/backend
+    dest: /root
+    force: no
+- name: "install npm packages"
+  become: true
+  command: npm install
+  args:
+    chdir: /root/backend
+- name: "compile npm packages"
+  become: true
+  command: npm run build
+  args:
+    chdir: /root/backend
+- name: "start server"
+  become: true
+  command: pm2 start npm -- run start
+  args:
+    chdir: /root/backend
