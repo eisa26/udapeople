@@ -385,13 +385,11 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
-            cd ~/project/backend
-            touch .env
-            export BACKENDIP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text) >> .env
-            export BACKENDDNS=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text) >> .env
-            echo "BACKENDIP: ${BACKENDIP}"
-            echo "BACKENDNS: ${BACKENDDNS}"
-            echo "BACKENDIP: ${API_URL}"
+            BACKEND_IP=$(curl -H "token: 32f0f419-eff1-45b7-9ac4-fe8b3ab08734" \
+              --request GET https://api.memstash.io/values/hosts-deployed-${CIRCLE_WORKFLOW_ID:0:7})
+            export API_URL="http://${BACKEND_IP}:3030/api/status"
+            echo "${API_URL}"
+            curl ${API_URL}
 
           
           
