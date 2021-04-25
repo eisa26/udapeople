@@ -87,7 +87,12 @@ jobs:
             echo "${OldWorkflowID}"
             export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
               --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            echo "${STACKS}"            
+            echo "${STACKS}"        
+            echo "Empty old S3 bucket and delete old frontend stack"
+            aws s3 rm s3://udapeople-frontend-${OldWorkflowID}/ --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-${OldWorkflowID}
+            echo "Delete old backend stack"              
+            aws cloudformation delete-stack --stack-name udapeople-backend-${OldWorkflowID}    
               
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
