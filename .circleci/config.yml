@@ -344,8 +344,8 @@ jobs:
             cd ~/project/backend
             pwd
             ls
-            #npm install
-            #npm audit --audit-level=critical
+            npm install
+            npm audit --audit-level=critical
             #npm audit fix --audit-level=critical --force
       - save_cache:
           paths: [backend/node_modules]
