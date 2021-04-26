@@ -43,9 +43,10 @@ jobs:
       - run:
           name: Back-end build
           command: |
-            cd ~/project/backend
-            npm install
-            npm run build
+            cd backend
+            sudo npm install npm@latest -g
+            sudo npm i --save-dev standard-version 
+            sudo npm run build
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -55,15 +56,14 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          keys: [frontend-build]
       - run:
           name: Build front-end
           command: |
-            cd ~/project/frontend
-            npm install
-            npm i --package-lock-only
-            npm run build
+            cd frontend
+            sudo npm update
+            sudo npm install npm@latest -g
+            sudo npm install webpack
+            sudo npm run build
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
