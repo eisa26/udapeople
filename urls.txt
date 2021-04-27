@@ -4,7 +4,7 @@ urls
 
 
 1-https://github.com/eisa26/udapeople [URL01]
-2-http://udapeople-kk1j287dhjppmz7894.s3-website.us-west-2.amazonaws.com/ [URL02]
+2-https://udapeople-kk1j287dhjppmz7894.s3-us-west-2.amazonaws.com/index.html [URL02]
 3-http://d2qhp4y9a1j99h.cloudfront.net [URL03]
 4-http://ec2-54-188-45-73.us-west-2.compute.amazonaws.com:3030/api/status [URL04]
 5-ec2-18-236-228-139.us-west-2.compute.amazonaws.com:9090/ [URL05]
