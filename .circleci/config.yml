@@ -399,7 +399,7 @@ jobs:
               echo "Backend IP: ${BACKEND_IP}"      
               EC2_URL="ec2-54-188-45-73.us-west-2.compute.amazonaws.com:3030/api/status"
               echo ${EC2_URL}
-              curl EC2_URL
+              curl ec2-54-188-45-73.us-west-2.compute.amazonaws.com:3030/api/status
                      
 
           
