@@ -222,8 +222,8 @@ jobs:
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text)
-            export API_URL="ec2-34-223-3-148.us-west-2.compute.amazonaws.com:3030"
-            echo "API_URL=$API_URL" >> frontend/.env
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo API_URL="http://${BACKEND_IP}:3030" >> "frontend/.env"
             echo "${API_URL}"
       - run:
           name: Deploy frontend objects
