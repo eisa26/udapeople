@@ -397,9 +397,9 @@ jobs:
                   --query 'Reservations[*].Instances[*].PublicIpAddress' \
                   --output text)
               echo "Backend IP: ${BACKEND_IP}"      
-              EC2_URL="ec2-54-188-45-73.us-west-2.compute.amazonaws.com:3030/api/status"
+              EC2_URL="ec2-34-223-3-148.us-west-2.compute.amazonaws.com:3030/api/status"
               echo ${EC2_URL}
-              curl ec2-54-188-45-73.us-west-2.compute.amazonaws.com:3030/api/status
+              curl ec2-34-223-3-148.us-west-2.compute.amazonaws.com:3030/api/status
                      
 
           
